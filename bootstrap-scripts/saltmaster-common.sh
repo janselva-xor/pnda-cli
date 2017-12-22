@@ -54,6 +54,10 @@ reactor:
     - salt://reactor/create_bastion_host_entry.sls
   - 'salt/cloud/*/destroying':
     - salt://reactor/delete_bastion_host_entry.sls
+  - 'salt/beacon/*/hadoop_service/service/hadoop/status/stopped':
+    - salt://reactor/service_hadoop_start_entry.sls
+  - "salt/beacon/*/service/":
+    - salt://reactor/service_start.sls
 ## end of specific PNDA saltmaster config
 file_recv: True
 
