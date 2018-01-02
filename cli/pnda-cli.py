@@ -319,6 +319,13 @@ def check_keypair(keyname, keyfile, existing_machines_def_file):
 
 def check_aws_connection():
     region = PNDA_ENV['ec2_access']['AWS_REGION']
+
+    valid_regions = [valid_region.name for valid_region in boto.ec2.regions()]
+    if region not in valid_regions:
+        CONSOLE.info('AWS connection... ERROR')
+        CONSOLE.error('Failed to connect to cloud formation API, ec2 region "%s" was not valid. Valid options are %s', region, json.dumps(valid_regions))
+        sys.exit(1)
+
     conn = boto.cloudformation.connect_to_region(region)
     if conn is None:
         CONSOLE.info('AWS connection... ERROR')
@@ -470,6 +477,21 @@ def wait_for_host_connectivity(hosts, cluster, bastion_ip):
 
     wait_on_host_operations('waiting for host connectivity', wait_threads, bastion_ip, wait_errors)
 
+def fetch_stack_events(cfn_cnxn, stack_name):
+    page_token = True
+    while (page_token is not None):
+        event_page = cfn_cnxn.describe_stack_events(stack_name, page_token)
+        for event in event_page:
+            resource_id = event.logical_resource_id
+            status = event.resource_status
+            reason = event.resource_status_reason
+            message = "%s: %s%s" % (resource_id, status, '' if reason is None else ' - %s' % reason)
+            if status in ['CREATE_FAILED', 'UPDATE_FAILED'] and reason != 'Resource creation cancelled':
+                CONSOLE.error(message)
+            else:
+                LOG.debug(message)
+        page_token = event_page.next_token
+
 def create(template_data, cluster, flavor, keyname, no_config_check, dry_run, branch, existing_machines_def_file):
 
     init_runfile(cluster)
@@ -515,6 +537,7 @@ def create(template_data, cluster, flavor, keyname, no_config_check, dry_run, br
 
         if stack_status != 'CREATE_COMPLETE':
             CONSOLE.error('Stack did not come up, status is: ' + stack_status)
+            fetch_stack_events(conn, cluster)
             sys.exit(1)
 
     instance_map = get_instance_map(cluster, existing_machines_def_file)
@@ -583,9 +606,7 @@ def create(template_data, cluster, flavor, keyname, no_config_check, dry_run, br
     ssh(['(sudo salt -v --log-level=debug --timeout=120 --state-output=mixed "*" state.highstate queue=True 2>&1) | tee -a pnda-salt.log; %s'
          % THROW_BASH_ERROR,
          '(sudo CLUSTER=%s salt-run --log-level=debug state.orchestrate orchestrate.pnda 2>&1) | tee -a pnda-salt.log; %s'
-         % (cluster, THROW_BASH_ERROR),
-         '(sudo salt "*%s" state.sls hostsfile 2>&1) | tee -a pnda-salt.log; %s'
-         % (bastion, THROW_BASH_ERROR)], cluster, saltmaster_ip)
+         % (cluster, THROW_BASH_ERROR)], cluster, saltmaster_ip)
 
     return instance_map[cluster + '-' + NODE_CONFIG['console-instance']]['private_ip_address']
 
@@ -623,6 +644,7 @@ def expand(template_data, cluster, flavor, old_datanodes, old_kafka, do_orchestr
 
         if stack_status != 'UPDATE_COMPLETE':
             CONSOLE.error('Stack did not come up, status is: ' + stack_status)
+            fetch_stack_events(conn, cluster)
             sys.exit(1)
 
     instance_map = get_instance_map(cluster, existing_machines_def_file)
