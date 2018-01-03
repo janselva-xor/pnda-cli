@@ -19,22 +19,22 @@
     },
     "instancetypeDbKafka" : {
       "Type" : "String",
-      "Default" : "m4.xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for databus kafka"
     },
     "instancetypeCdhMgr" : {
       "Type" : "String",
-      "Default" : "m4.2xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for CDH management"
     },
     "instancetypeCdhDn" : {
       "Type" : "String",
-      "Default" : "m4.2xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for CDH datanode"
     },
     "instancetypeOpenTsdb" : {
       "Type" : "String",
-      "Default" : "m4.xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for open TSDB"
     },
     "instancetypeJupyter" : {
@@ -49,7 +49,7 @@
     },
     "instancetypeCdhCm" : {
       "Type" : "String",
-      "Default" : "m4.xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for CDH Cloudera Manager"
     },
     "instancetypeCdhEdge" : {
@@ -74,27 +74,27 @@
     },
     "instancetypeESIngest" : {
       "Type" : "String",
-      "Default" : "c4.xlarge",
+      "Default" : "c4.large",
       "Description" : "Instance type for ELK ES cluster ingest node"
     },
     "instancetypeESData" : {
       "Type" : "String",
-      "Default" : "m4.xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for ELK ES cluster data node"
     },
     "instancetypeESCoordinator" : {
       "Type" : "String",
-      "Default" : "m4.2xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for ELK ES cluster coordinator node"
     },
     "instancetypeESMulti" : {
       "Type" : "String",
-      "Default" : "m4.2xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for ELK ES cluster multi-role node"
     },
     "instancetypeLogstash" : {
       "Type" : "String",
-      "Default" : "m4.xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for ELK Logstash node"
     }
   },

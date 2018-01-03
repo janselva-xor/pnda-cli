@@ -12,17 +12,17 @@
     },
     "instancetypeCdhMgr" : {
       "Type" : "String",
-      "Default" : "m4.xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for CDH management"
     },
     "instancetypeCdhDn" : {
       "Type" : "String",
-      "Default" : "c4.xlarge",
+      "Default" : "c4.large",
       "Description" : "Instance type for CDH datanode"
     },
     "instancetypeEdge" : {
       "Type" : "String",
-      "Default" : "m4.2xlarge",
+      "Default" : "m4.large",
       "Description" : "Instance type for cluster edge node"
     },
     "instancetypeESMulti" : {
